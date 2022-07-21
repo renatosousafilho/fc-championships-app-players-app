@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ include "players.fullname" . }}
   annotations:
-    konghq.com/plugins: prometheus-players
+    konghq.com/plugins: prometheus-players,players-logs
     ingress.kubernetes.io/service-upstream: "true"
   labels:
     {{- include "players.labels" . | nindent 4 }}
