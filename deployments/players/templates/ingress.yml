@@ -31,12 +31,10 @@ spec:
     - host: {{ .host | quote }}	
       http:	
         paths:	
-          {{- range .paths }}	
           - pathType: Prefix	
             path: /api/players
             backend:	
               serviceName: players
               servicePort: 9999
-          {{- end }}	
     {{- end }}	
   {{- end }}
