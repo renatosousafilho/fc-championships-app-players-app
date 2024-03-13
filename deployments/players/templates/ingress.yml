@@ -33,6 +33,8 @@ spec:
           - pathType: Prefix	
             path: /api/players
             backend:	
-              serviceName: players
-              servicePort: 9999
+              service: 
+                name: players
+                port:
+                  number: 9999
   {{- end }}
