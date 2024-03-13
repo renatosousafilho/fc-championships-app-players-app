@@ -53,7 +53,8 @@ ingress:
     konghq.com/plugins: prometheus-players
 
   hosts:
-    - paths:
+    - host: "ingress.fullcycle.com.br"
+      paths:
       - path: /api/players
         backend:
           serviceName: players
