@@ -27,7 +27,6 @@ spec:
     {{- end }}	
   {{- end }}	
   rules:	
-    {{- range .Values.ingress.hosts }}	
     - host: "ingress.fullcycle.com.br"
       http:	
         paths:	
@@ -36,5 +35,3 @@ spec:
             backend:	
               serviceName: players
               servicePort: 9999
-    {{- end }}	
-  {{- end }}
