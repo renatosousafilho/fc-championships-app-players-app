@@ -27,15 +27,14 @@ spec:
     {{- end }}	
   {{- end }}	
   rules:	
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            backend:
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
-          {{- end }}
-    {{- end }}
+    - host: "ingress.fullcycle.com.br"
+      http:	
+        paths:	
+          - pathType: Prefix	
+            path: /api/players
+            backend:	
+              service: 
+                name: players
+                port:
+                  number: 80
   {{- end }}
