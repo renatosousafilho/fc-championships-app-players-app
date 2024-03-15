@@ -27,7 +27,7 @@ spec:
     {{- end }}	
   {{- end }}	
   rules:	
-    - host: "ingress.fullcycle.com.br"
+    - host: "localhost"
       http:	
         paths:	
           - pathType: Prefix	
