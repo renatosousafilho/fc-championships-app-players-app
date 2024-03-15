@@ -1,49 +1,64 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: {{ include "players.fullname" . }}
   labels:
-    version: v1
-    app: players
-  name: players
+    {{- include "players.labels" . | nindent 4 }}
 spec:
-  replicas: 1
-  revisionHistoryLimit: 1
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
-      app: players
+      {{- include "players.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
-        app: players
-        version: v1
-        stack: echo
-        interface: rest
-        language: golang
+        {{- include "players.selectorLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "players.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - image: renatofh/players-go:latest
-          imagePullPolicy: Always
-          resources:
-            requests:
-              memory: "5Mi"
-              cpu: "100m"
-            limits:
-              memory: "10Mi"
-              cpu: "200m"
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "players.fullname" . }}
+          ports:
+            - name: http
+              containerPort: 9999
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: /health
-              port: 9999
-              scheme: HTTP
-            initialDelaySeconds: 1
-          name: players
-          ports:
-            - containerPort: 9999
-              name: http
-              protocol: TCP
+              port: http
           readinessProbe:
             httpGet:
               path: /health
-              port: 9999
-              scheme: HTTP
-            initialDelaySeconds: 1
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
